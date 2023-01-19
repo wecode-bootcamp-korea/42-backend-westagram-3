@@ -1,15 +1,8 @@
-// Built-in packages
-
-// 3rd-party packages
+require('dotenv').config();
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
 const { DataSource } = require('typeorm')
-
-// custom packages
-
-const dotenv = require('dotenv')
-dotenv.config()
 
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
@@ -26,8 +19,6 @@ myDataSource.initialize()
   })
 
 app = express()
-
-// Middleware : request response 사이에 middleware 를 거친다.  app.use(express.json())
 app.use(cors())
 app.use(morgan('dev'))
 
