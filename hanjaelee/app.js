@@ -1,15 +1,12 @@
 // Built-in packages
 
 // 3rd-party packages
-
-require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+const { DataSource } = require('typeorm')
 
 // custom packages
-
-const { DataSource } = require('typeorm')
 
 const dotenv = require('dotenv')
 dotenv.config()
@@ -40,7 +37,11 @@ app.get('/ping', (req, res) => {
 
 const PORT = process.env.PORT;
 const start = async () => {
-  app.listen(PORT, () => console.log(`server is listening to on ${PORT}`))
+  try {
+    app.listen(PORT, () => console.log(`server is listening to on ${PORT}`))
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 start()
