@@ -1,16 +1,11 @@
-const http = require("http");
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-const dotenv = require("dotenv");
-dotenv.config();
 
-const {
-  DataSource,
-  CustomRepositoryCannotInheritRepositoryError,
-} = require("typeorm");
+const { DataSource } = require("typeorm");
 
-const myDataSource = new DataSource({
+const mysqlDatabase = new DataSource({
   type: process.env.TYPEORM_CONNCETION,
   host: process.env.TYPEORM_HOST,
   username: process.env.TYPEORM_USERNAME,
@@ -19,9 +14,14 @@ const myDataSource = new DataSource({
   port: process.env.TYPEORM_PORT,
 });
 
-myDataSource.initialize().then(() => {
-  console.log("DataSource has been initialize~");
-});
+mysqlDatabase
+  .initialize()
+  .then(() => {
+    console.log("🆗🆗🆗DataSource has been initialize~🆗🆗🆗");
+  })
+  .catch((err) => {
+    console.log("❌❌❌DataSource hasn't been initialize❌❌❌");
+  });
 
 app = express();
 app.use(express.json());
@@ -32,11 +32,14 @@ app.get("/ping", (req, res) => {
   res.json({ message: "pong" });
 });
 
-const server = http.createServer(app);
 const PORT = process.env.PORT;
 
 const start = async () => {
-  server.listen(PORT, () => console.log(`server is listening on ${PORT}`));
+  try {
+    app.listen(PORT, () => console.log(`server is listening on ${PORT}`));
+  } catch (err) {
+    throw console.error(err);
+  }
 };
 
 start();
