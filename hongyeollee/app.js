@@ -28,8 +28,26 @@ app.use(express.json());
 app.use(morgan("combined"));
 app.use(cors());
 
+//health check
 app.get("/ping", (req, res) => {
   res.json({ message: "pong" });
+});
+
+//create user
+app.post("/signup", async (req, res) => {
+  const { name, password, age, email } = req.body;
+
+  await mysqlDatabase.query(
+    `INSERT INTO users(
+      name,
+      password,
+      age,
+      email
+    )VALUES(?, ?, ?, ?);
+    `,
+    [name, password, age, email]
+  );
+  res.status(201).json({ message: "userCreated ✅" });
 });
 
 const PORT = process.env.PORT;
@@ -38,7 +56,8 @@ const start = async () => {
   try {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}`));
   } catch (err) {
-    throw console.error(err);
+    console.error("Failed server listening", err);
+    throw err;
   }
 };
 
