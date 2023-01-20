@@ -29,6 +29,8 @@ app.get('/ping', (req, res) => {
   res.json({ message: 'pong' })
 })
 
+// test
+
 const PORT = process.env.PORT;
 const start = async () => {
   try {
