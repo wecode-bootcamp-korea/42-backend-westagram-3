@@ -46,11 +46,11 @@ app.post('/signup', (req, res) => {
 
   const rawQuery =
     `
-  INSERT INTO users (
-    name,
-    email,
-    profile_image,
-    password
+    INSERT INTO users (
+      name,
+      email,
+      profile_image,
+      password
     ) VALUES (?, ?, ?, ?);`
   const rawData = database.query(rawQuery, [name, email, profileImage, password])
 

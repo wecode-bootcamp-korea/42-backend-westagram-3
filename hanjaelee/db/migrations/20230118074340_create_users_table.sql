@@ -8,7 +8,6 @@ CREATE TABLE users (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT users_id_pk PRIMARY KEY (id),
-  CONSTRAINT users_name_uk UNIQUE (name),
   CONSTRAINT users_email_uk UNIQUE (email)
 )
 
