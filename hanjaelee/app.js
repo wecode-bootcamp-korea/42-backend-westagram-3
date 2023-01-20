@@ -15,7 +15,7 @@ const database = new DataSource({
 
 database.initialize()
   .then(() => {
-    console.log('Data Source has been initialized.')
+    console.log('🆗🆗🆗 Data Source has been initialized.')
   })
   .catch((err) => {
     console.log('❌❌❌ Data Source has not been initialized.')
@@ -56,7 +56,6 @@ app.post('/signup', (req, res) => {
 
   rawData
     .then((data) => {
-      console.log(data)
       if (data.affectedRows) {
         res.status(201).json({ message: 'userCreated' })
         return
