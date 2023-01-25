@@ -83,7 +83,7 @@ app.post('/post', async (req, res) => {
     if (rawData['affectedRows']) {
       return res.status(201).json({ message: 'postCreated' })
     }
-    return res.sattus(202).json({ message: 'postnotcreated' })
+    return res.status(202).json({ message: 'postnotcreated' })
   } catch (error) {
     return res.status(400).json({ message: error.sqlMessage })
   }
