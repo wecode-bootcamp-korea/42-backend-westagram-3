@@ -25,7 +25,6 @@ app = express()
 
 // Client 로 부터 JSON 형식이 잘못되었을 경우 처리하는 middleware
 const invalidJsonMiddleware = (error, req, res, next) => {
-  console.log(Object.keys(error))
   if (error instanceof SyntaxError) {
     res.status(400).json({ message: 'Invalid json is sent' })
   } else {
@@ -104,7 +103,6 @@ app.get('/posts', async (req, res) => {
     `
   try {
     await database.query(rawQuery, (err, rows) => {
-      console.log(rows)
       const result = {}
       const data = rows
       result['data'] = data
@@ -134,7 +132,6 @@ app.get('/posts/:userId', async (req, res) => {
 
   try {
     await database.query(rawQuery, (err, rows) => {
-      console.log(rows)
       return res.status(200).json({ data: rows })
     })
   } catch (error) {
