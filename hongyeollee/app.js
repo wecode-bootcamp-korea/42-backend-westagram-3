@@ -39,12 +39,12 @@ app.post("/signup", async (req, res) => {
 
   await mysqlDatabase.query(
     `INSERT INTO users(
-      name,
-      password,
-      age,
-      email
-    )VALUES(?, ?, ?, ?);
-    `,
+          name,
+          password,
+          age,
+          email
+        )VALUES(?, ?, ?, ?);
+        `,
     [name, password, age, email]
   );
   res.status(201).json({ message: "userCreated ✅" });
