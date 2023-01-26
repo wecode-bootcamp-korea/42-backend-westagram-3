@@ -43,10 +43,10 @@ app.get('/ping', (req, res) => {
 
 // 과제 2 회원가입
 app.post('/signup', async (req, res) => {
-  const { name, email, profileImage, password } = req.body
+  try {
+    const { name, email, profileImage, password } = req.body
 
-  const rawQuery =
-    `
+    const rawQuery = `
     INSERT INTO users (
       name,
       email,
@@ -54,42 +54,48 @@ app.post('/signup', async (req, res) => {
       password
     ) VALUES (?, ?, ?, ?);`
 
-  try {
     const rawData = await database.query(rawQuery, [name, email, profileImage, password])
+
     if (rawData['affectedRows']) {
       return res.status(201).json({ message: 'userCreated' })
     }
+
     return res.status(202).json({ message: 'userNotCreated' })
   } catch (error) {
+    console.error('Failed to Signup', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 3 게시글 등록하기
 app.post('/post', async (req, res) => {
-  const { title, content, userId } = req.body
+  try {
+    const { title, content, userId } = req.body
 
-  const rawQuery =`
+    const rawQuery = `
     INSERT INTO posts (
       title,
       content,
       user_id
     ) VALUES (?, ?, ?);`
 
-  try {
     const rawData = await database.query(rawQuery, [title, content, userId])
+
     if (rawData['affectedRows']) {
       return res.status(201).json({ message: 'postCreated' })
     }
+
     return res.status(202).json({ message: 'postnotcreated' })
   } catch (error) {
+    console.error('Failed to Posting', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 4 모든 게시물 가져오기
-app.get('/posts', async (req, res) => {
-  const rawQuery = `
+app.get('/post', async (req, res) => {
+  try {
+    const rawQuery = `
     SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
@@ -98,57 +104,58 @@ app.get('/posts', async (req, res) => {
       p.content AS postingContent
     FROM posts AS p
     INNER JOIN users AS u
-    ON p.user_id = u.id
-    `
-  try {
+    ON p.user_id = u.id`
+
     await database.query(rawQuery, (err, rows) => {
       const result = {}
       const data = rows
       result['data'] = data
-      res.status(200).json(result)
+      return res.status(200).json(result)
     })
   } catch (error) {
+    console.error('Failed To Get Posts', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 5 유저 한명이 작성한 모든 게시물 가져오기
-app.get('/posts/:userId', async (req, res) => {
-  const { userId } = req.params
-  const rawQuery = `
+app.get('/post/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params
+    const rawQuery = `
     SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
-      JSON_ARRAYAGG(JSON_OBJECT(
-                    'postingId', p.id,
-                    'postingImageUrl', p.image_url,
-                    'postingContent', p.content)) AS posting
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'postingId', p.id,
+          'postingImageUrl', p.image_url,
+          'postingContent', p.content)) AS posting
     FROM posts AS p
     INNER JOIN users AS u
-    ON p.user_id = u.id WHERE u.id = ${userId}
+    ON p.user_id = u.id WHERE u.id = ?
     GROUP BY u.id;`
 
-  try {
-    await database.query(rawQuery, (err, rows) => {
-      return res.status(200).json({ data: rows })
-    })
+    const [result] = await database.query(
+      rawQuery, userId)
+    res.status(200).json({ data: result })
   } catch (error) {
+    console.error('Failed get post for user', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 6 유저 한명이 작성한 게시글 내용 수정하기
 app.patch('/post', async (req, res) => {
-  const { postId, userId, postContent } = req.body
-  let rawQuery = `
-    UPDATE posts
-    SET content = ?
-    WHERE id = ? AND user_id = ?;`
-
   try {
+    const { postId, userId, postContent } = req.body
+    let rawQuery = `
+      UPDATE posts
+      SET content = ?
+      WHERE id = ? AND user_id = ?;`
     const rawData = await database.query(rawQuery, [postContent, postId, userId])
-    if (rawData['affectedRows']) {
 
+    if (rawData['affectedRows']) {
       rawQuery = `
       SELECT
         u.id AS userId,
@@ -158,35 +165,25 @@ app.patch('/post', async (req, res) => {
         p.content AS postingContent FROM posts AS p
       INNER JOIN users AS u
       ON p.user_id = u.id
-      WHERE u.id = ${userId} AND p.id = ${postId}
+      WHERE u.id = ? AND p.id = ?
       LIMIT 1;`
-
-      try {
-        await database.query(rawQuery, (err, rows) => {
-          if (rows.length == 0) {
-            return res.status(400).json({ message: 'affected rows is empty' })
-          }
-          return res.status(200).json({ data: rows[0] })
-        })
-      } catch (error) {
-        return res.status(200).json({ message: error.sqlMessage })
-      }
+      const [result] = await database.query(rawQuery, [userId, postId])
+      return res.status(200).json({ data: result })
     }
-    return res.status(400).json({ message: `userId and postId is not matched` })
   }
   catch (error) {
+    console.error('Failed to update user posting', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 7 게시글 삭제하기
 app.delete('/post/:postId', async (req, res) => {
-  const { postId } = req.params
-
-  const rawQuery = `
-    DELETE FROM posts WHERE id = ?;`
-
   try {
+    const { postId } = req.params
+
+    const rawQuery = `
+    DELETE FROM posts WHERE id = ?;`
     const rawData = await database.query(rawQuery, [postId])
     if (rawData['affectedRows'] == 0) {
       return res.status(400).json({ message: `There is no post to delete for postId ${postId}` })
@@ -194,21 +191,22 @@ app.delete('/post/:postId', async (req, res) => {
     return res.status(200).json({ meesage: 'postingDeleted' })
   }
   catch (error) {
+    console.log('Failed to delete post', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
 
 // 과제 8 좋아요 누르기
 app.post('/like', async (req, res) => {
-  const { userId, postId } = req.body
+  try {
+    const { userId, postId } = req.body
 
-  const rawQuery = `
+    const rawQuery = `
     INSERT INTO likes (
     user_id,
     post_id
     ) VALUES (?, ?);`
 
-  try {
     const rawData = await database.query(rawQuery, [userId, postId])
     if (rawData['affectedRows'] == 0) {
       return res.status(400).json({ message: 'like is not inserted.' })
@@ -217,6 +215,7 @@ app.post('/like', async (req, res) => {
     return res.status(200).json({ message: 'likeCreated' })
   }
   catch (error) {
+    console.error('Failed to like post', error)
     return res.status(400).json({ message: error.sqlMessage })
   }
 })
@@ -226,7 +225,7 @@ const start = async () => {
   try {
     app.listen(PORT, () => console.log(`server is listening to on ${PORT} `))
   } catch (err) {
-    console.error(err)
+    console.error('server is not listening', err)
   }
 }
 
