@@ -69,8 +69,7 @@ app.post('/signup', async (req, res) => {
 app.post('/post', async (req, res) => {
   const { title, content, userId } = req.body
 
-  const rawQuery =
-    `
+  const rawQuery =`
     INSERT INTO posts (
       title,
       content,
@@ -127,8 +126,7 @@ app.get('/posts/:userId', async (req, res) => {
     FROM posts AS p
     INNER JOIN users AS u
     ON p.user_id = u.id WHERE u.id = ${userId}
-    GROUP BY u.id;
-    `
+    GROUP BY u.id;`
 
   try {
     await database.query(rawQuery, (err, rows) => {
@@ -142,12 +140,10 @@ app.get('/posts/:userId', async (req, res) => {
 // 과제 6 유저 한명이 작성한 게시글 내용 수정하기
 app.patch('/post', async (req, res) => {
   const { postId, userId, postContent } = req.body
-
   let rawQuery = `
     UPDATE posts
     SET content = ?
-    WHERE id = ? AND user_id = ?;
-  `
+    WHERE id = ? AND user_id = ?;`
 
   try {
     const rawData = await database.query(rawQuery, [postContent, postId, userId])
@@ -163,8 +159,8 @@ app.patch('/post', async (req, res) => {
       INNER JOIN users AS u
       ON p.user_id = u.id
       WHERE u.id = ${userId} AND p.id = ${postId}
-      LIMIT 1;
-    `
+      LIMIT 1;`
+
       try {
         await database.query(rawQuery, (err, rows) => {
           if (rows.length == 0) {
@@ -188,8 +184,8 @@ app.delete('/post/:postId', async (req, res) => {
   const { postId } = req.params
 
   const rawQuery = `
-    DELETE FROM posts WHERE id = ?;
-  `
+    DELETE FROM posts WHERE id = ?;`
+
   try {
     const rawData = await database.query(rawQuery, [postId])
     if (rawData['affectedRows'] == 0) {
@@ -205,12 +201,13 @@ app.delete('/post/:postId', async (req, res) => {
 // 과제 8 좋아요 누르기
 app.post('/like', async (req, res) => {
   const { userId, postId } = req.body
+
   const rawQuery = `
-    INSERT INTO likes
-    (user_id, post_id)
-    VALUES
-    (?, ?);
-  `
+    INSERT INTO likes (
+    user_id,
+    post_id
+    ) VALUES (?, ?);`
+
   try {
     const rawData = await database.query(rawQuery, [userId, postId])
     if (rawData['affectedRows'] == 0) {
