@@ -23,7 +23,6 @@ database.initialize()
 
 app = express()
 
-// Client 로 부터 JSON 형식이 잘못되었을 경우 처리하는 middleware
 const invalidJsonMiddleware = (error, req, res, next) => {
   if (error instanceof SyntaxError) {
     res.status(400).json({ message: 'Invalid json is sent' })
@@ -106,12 +105,8 @@ app.get('/post', async (req, res) => {
     INNER JOIN users AS u
     ON p.user_id = u.id`
 
-    await database.query(rawQuery, (err, rows) => {
-      const result = {}
-      const data = rows
-      result['data'] = data
-      return res.status(200).json(result)
-    })
+    const result = await database.query(rawQuery)
+    return res.status(200).json({ data: result })
   } catch (error) {
     console.error('Failed To Get Posts', error)
     return res.status(400).json({ message: error.sqlMessage })
