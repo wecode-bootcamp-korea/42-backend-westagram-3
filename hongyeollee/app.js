@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const { DataSource } = require("typeorm");
+const { response } = require("express");
 
 const mysqlDatabase = new DataSource({
   type: process.env.TYPEORM_CONNCETION,
@@ -33,21 +34,139 @@ app.get("/ping", (req, res) => {
   res.json({ message: "pong" });
 });
 
-//create user
+//과제 2.create user
 app.post("/signup", async (req, res) => {
-  const { name, password, age, email } = req.body;
+  const { name, password, profileImage, email } = req.body;
 
   await mysqlDatabase.query(
     `INSERT INTO users(
           name,
           password,
-          age,
+          profile_image,
           email
         )VALUES(?, ?, ?, ?);
         `,
-    [name, password, age, email]
+    [name, password, profileImage, email]
   );
-  res.status(201).json({ message: "userCreated ✅" });
+  res.status(201).json({ message: "userCreated 👫" });
+});
+
+//과제 3. create post
+app.post("/posting", async (req, res) => {
+  const { title, content, imageUrl } = req.body;
+
+  await mysqlDatabase.query(
+    `INSERT INTO posts(
+          title,
+          content,
+          image_url
+        )VALUES(?, ?, ?);
+        `,
+    [title, content, imageUrl]
+  );
+  res.status(201).json({ message: "postCreated 📝" });
+});
+
+//과제 4. search and get posts
+app.get("/getpost", async (req, res) => {
+  await mysqlDatabase.query(
+    `SELECT
+        u.id AS userId,
+        u.profile_image AS userProfileImage,
+        p.id AS postingId,
+        p.image_url AS postingImageUrl,
+        p.content AS postingContent
+        FROM users u
+        INNER JOIN posts p
+        ON u.id=p.id`,
+    (err, rows) => {
+      res.status(200).json({ data: rows });
+    }
+  );
+});
+
+//과제 5. get post of targeting user
+app.get("/postofuser", async (req, res) => {
+  await mysqlDatabase.query(
+    `SELECT
+        u.id AS userId,
+        u.profile_image AS userProfileImage,
+          JSON_ARRAYAGG(
+            JSON_OBJECT(
+              'postingId',p.id,
+              'postingImageUrl', p.image_url,
+              'postingContent', p.content)) AS posting
+              FROM posts p
+              INNER  JOIN users u
+              ON u.id=p.id
+              GROUP BY u.id;
+      `,
+    (err, rows) => {
+      res.status(200).json({ data: rows });
+    }
+  );
+});
+
+// 과제 6. update posting content
+app.patch("/updatecontent", async (req, res) => {
+  const { postContent, postId } = req.body;
+
+  await mysqlDatabase.query(
+    `
+      UPDATE posts p SET
+          p.content=?
+          WHERE p.id=?
+    `,
+    [postContent, postId]
+  );
+
+  await mysqlDatabase.query(
+    `
+      SELECT
+        u.id AS userId,
+        u.name AS userName,
+        p.id AS postingId,
+        p.title AS postingTitle,
+        p.content AS postingContent
+      FROM users u
+      INNER JOIN posts p
+      ON u.id=p.id WHERE p.id=${postId};
+    `,
+    (err, rows) => {
+      res.status(201).json({ data: rows });
+    }
+  );
+});
+
+// 과제 7. delete targeting post
+app.delete("/delete", async (req, res) => {
+  const { postId } = req.body;
+
+  await mysqlDatabase.query(
+    `
+    DELETE FROM
+        posts
+    WHERE posts.id=${postId}
+  `,
+    [postId]
+  );
+  res.status(200).json({ message: "postingDelete ␡" });
+});
+
+//과제 8. create likes
+app.post("/likes", async (req, res) => {
+  const { userId, postId } = req.body;
+
+  await mysqlDatabase.query(
+    `
+    INSERT INTO likes(
+      user_id,
+      post_id)
+      VALUES(?,?);
+    `,
+    [userId, postId]
+  );
+  res.status(200).json({ message: "likeCreated 👍" });
 });
 
 const PORT = process.env.PORT;

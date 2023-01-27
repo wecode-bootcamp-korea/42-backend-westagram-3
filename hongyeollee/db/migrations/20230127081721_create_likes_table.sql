@@ -1,0 +1,14 @@
+-- migrate:up
+CREATE TABLE likes (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  post_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT likes_user_fkey FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT likes_post_fkey FOREIGN KEY (post_id) REFERENCES posts(id),
+  CONSTRAINT like_user_post_ukey UNIQUE (user_id,post_id)
+);
+
+-- migrate:down
+DROP TABLE likes;
