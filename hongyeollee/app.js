@@ -107,7 +107,7 @@ app.get("/postofuser", async (req, res) => {
 });
 
 // 과제 6. update posting content
-app.patch("/updatecontent", async (req, res) => {
+app.patch("/post", async (req, res) => {
   const { postContent, postId } = req.body;
 
   await mysqlDatabase.query(
@@ -137,7 +137,7 @@ app.patch("/updatecontent", async (req, res) => {
 });
 
 // 과제 7. delete targeting post
-app.delete("/delete", async (req, res) => {
+app.delete("/post", async (req, res) => {
   const { postId } = req.body;
 
   await mysqlDatabase.query(
