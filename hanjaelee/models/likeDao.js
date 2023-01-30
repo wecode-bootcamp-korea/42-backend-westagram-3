@@ -4,8 +4,8 @@ const postLike = async (userId, postId) => {
   try {
     const rawQuery = `
     INSERT INTO likes (
-    user_id,
-    post_id
+      user_id,
+      post_id
     ) VALUES (?, ?);`
 
     const isLiked = await database.query(rawQuery, [userId, postId])
