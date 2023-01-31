@@ -1,6 +1,6 @@
 const postDao = require('../models/postDao')
 
-const write = async (title, content, imageURL, userId) => {
+const writePost = async (title, content, imageURL, userId) => {
   const isWrited = postDao.writePost(
     title,
     content,
@@ -31,7 +31,7 @@ const deletePost = async (postId) => {
 }
 
 module.exports = {
-  write,
+  writePost,
   getPosts,
   getPost,
   modifyPost,

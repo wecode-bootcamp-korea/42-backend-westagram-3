@@ -1,10 +1,13 @@
 const postService = require('../services/postService')
 
-const write = async (req, res) => {
+const writePost = async (req, res) => {
   try {
     const { title, content, imageURL, userId } = req.body
-    await postService.write(title, content, imageURL, userId)
-    res.status(200).json({ message: 'postCreated' })
+
+    const data = await postService.writePost(title, content, imageURL, userId)
+    if (!data['affectedRows']) throw new Error('Failed To write Post.')
+
+    return res.status(200).json({ message: 'postCreated' })
   } catch (err) {
     console.error(err)
     return res.status(err.statusCode || 500).json({ message: err.message })
@@ -62,7 +65,7 @@ const deletePost = async (req, res) => {
 }
 
 module.exports = {
-  write,
+  writePost,
   getPosts,
   getPost,
   modifyPost,
