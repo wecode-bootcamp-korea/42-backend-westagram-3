@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt')
 const userDao = require('../models/userDao.js')
 
 const signup = async (name, email, password, profileImage) => {
-  const hashedPassword = await makeHashedPassword(password, 12)
+  const COST_FACTOR = 12
+  const hashedPassword = await makeHashedPassword(password, COST_FACTOR)
 
   const isCreated = await userDao.createUser(
     name,
