@@ -3,8 +3,15 @@ import sys
 
 import mysql.connector
 from dotenv import load_dotenv
+import bcrypt
 
 load_dotenv()
+
+def encode_password(password):
+  cost_factor = 12
+  salt = bcrypt.gensalt(cost_factor)
+  encoded_password = bcrypt.hashpw(password, salt)
+  return encoded_password
 
 def delete_tables(cnx, cur):
   tables = ['likes', 'comments', 'posts', 'users']
@@ -20,7 +27,7 @@ def insert_users(cnx, cur):
   for x in range(1, 11):
     name = 'hanjaelee %s' % x
     email = 'jayhanjaelee%s@gmail.com' % x
-    password = 1234
+    password = encode_password(b'1234')
     profile_image = 'http://profile_image%s.jpg' % x
 
     query = (
