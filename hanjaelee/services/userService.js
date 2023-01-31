@@ -28,11 +28,12 @@ const login = async (email, password) => {
     const isSame = await checkHashedPassword(password, hashedPassword)
     if (!isSame) return accessToken
 
-    const current = getCurrentTimeInSeconds()
+    const CURRENT_TIME = getCurrentTimeInSeconds()
+    const EXPIRE_TIME = 60 * 60 * 24
     const payLoad = {
       iss: 'Hanjae Lee',
-      iat: current,
-      exp: current + (60 * 60 * 24),
+      iat: CURRENT_TIME,
+      exp: CURRENT_TIME + EXPIRE_TIME,
       userId: userId
     }
 
@@ -54,7 +55,8 @@ const checkHashedPassword = async (password, hashedPassword) => {
 }
 
 const getCurrentTimeInSeconds = () => {
-  return Math.floor((Date.now() / 1000) + (60 * 60 * 9))
+  const current = (Date.now() / 1000) + (60 * 60 * 9)
+  return Math.floor(current)
 }
 module.exports = {
   signup,
