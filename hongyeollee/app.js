@@ -38,7 +38,8 @@ app.post("/signup", async (req, res) => {
   const { name, password, profileImage, email } = req.body;
 
   await mysqlDatabase.query(
-    `INSERT INTO users(
+    `
+    INSERT INTO users(
           name,
           password,
           profile_image,
@@ -55,7 +56,8 @@ app.post("/post", async (req, res) => {
   const { title, content, imageUrl } = req.body;
 
   await mysqlDatabase.query(
-    `INSERT INTO posts(
+    `
+    INSERT INTO posts(
           title,
           content,
           image_url
@@ -67,9 +69,10 @@ app.post("/post", async (req, res) => {
 });
 
 //과제 4. search and get posts
-app.get("/getpost", async (req, res) => {
+app.get("/post", async (req, res) => {
   await mysqlDatabase.query(
-    `SELECT
+    `
+    SELECT
         u.id AS userId,
         u.profile_image AS userProfileImage,
         p.id AS postingId,
@@ -85,25 +88,28 @@ app.get("/getpost", async (req, res) => {
 });
 
 //과제 5. get post of targeting user
-app.get("/postofuser", async (req, res) => {
-  await mysqlDatabase.query(
-    `SELECT
+app.get("/post/user/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  const [userOfPsot] = await mysqlDatabase.query(
+    `
+    SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
         JSON_ARRAYAGG(
           JSON_OBJECT(
             'postingId',p.id,
             'postingImageUrl', p.image_url,
-            'postingContent', p.content)) AS posting
+            'postingContent', p.content)) AS postings
     FROM posts p
     INNER  JOIN users u
     ON u.id=p.id
+    WHERE u.id=?
     GROUP BY u.id;
     `,
-    (err, rows) => {
-      res.status(200).json({ data: rows });
-    }
+    [userId]
   );
+  res.status(200).json({ data: userOfPsot });
 });
 
 // 과제 6. update posting content
@@ -141,7 +147,8 @@ app.delete("/post", async (req, res) => {
   const { postId } = req.body;
 
   await mysqlDatabase.query(
-    `DELETE FROM
+    `
+    DELETE FROM
         posts
     WHERE posts.id=${postId}
     `,
@@ -155,10 +162,11 @@ app.post("/likes", async (req, res) => {
   const { userId, postId } = req.body;
 
   await mysqlDatabase.query(
-    `INSERT INTO likes(
+    `
+    INSERT INTO likes(
         user_id,
-        post_id)
-      VALUES(?,?);
+        post_id
+    ) VALUES(?,?);
     `,
     [userId, postId]
   );
