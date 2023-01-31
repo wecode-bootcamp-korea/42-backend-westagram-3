@@ -53,17 +53,18 @@ app.post("/signup", async (req, res) => {
 
 //과제 3. create post
 app.post("/post", async (req, res) => {
-  const { title, content, imageUrl } = req.body;
+  const { title, content, imageUrl, userId } = req.body;
 
   await mysqlDatabase.query(
     `
     INSERT INTO posts(
           title,
           content,
-          image_url
-        )VALUES(?, ?, ?);
+          image_url,
+          user_id
+        )VALUES(?, ?, ?, ?);
         `,
-    [title, content, imageUrl]
+    [title, content, imageUrl, userId]
   );
   res.status(201).json({ message: "postCreated 📝" });
 });
@@ -91,7 +92,7 @@ app.get("/post", async (req, res) => {
 app.get("/post/user/:userId", async (req, res) => {
   const { userId } = req.params;
 
-  const [userOfPsot] = await mysqlDatabase.query(
+  const userOfPost = await mysqlDatabase.query(
     `
     SELECT
       u.id AS userId,
@@ -103,13 +104,13 @@ app.get("/post/user/:userId", async (req, res) => {
             'postingContent', p.content)) AS postings
     FROM posts p
     INNER  JOIN users u
-    ON u.id=p.id
+    ON p.user_id=u.id
     WHERE u.id=?
     GROUP BY u.id;
     `,
     [userId]
   );
-  res.status(200).json({ data: userOfPsot });
+  res.status(200).json({ data: userOfPost });
 });
 
 // 과제 6. update posting content
