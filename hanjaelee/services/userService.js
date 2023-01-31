@@ -28,7 +28,14 @@ const login = async (email, password) => {
     const isSame = await checkHashedPassword(password, hashedPassword)
     if (!isSame) return accessToken
 
-    const payLoad = { userId: userId }
+    const current = getCurrentTimeInSeconds()
+    const payLoad = {
+      iss: 'Hanjae Lee',
+      iat: current,
+      exp: current + (60 * 60 * 24),
+      userId: userId
+    }
+
     const secretKey = process.env.SECRET_KEY
     accessToken = jwt.sign(payLoad, secretKey)
     return accessToken
@@ -46,6 +53,9 @@ const checkHashedPassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword)
 }
 
+const getCurrentTimeInSeconds = () => {
+  return Math.floor((Date.now() / 1000) + (60 * 60 * 9))
+}
 module.exports = {
   signup,
   login
