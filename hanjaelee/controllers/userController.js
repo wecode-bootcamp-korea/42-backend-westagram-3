@@ -25,6 +25,23 @@ const signup = async (req, res) => {
   }
 }
 
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const accessToken = await userService.login(email, password)
+
+    if (!accessToken) {
+      return res.status(401).json({ message: "Invalid User" })
+    }
+
+    return res.status(200).json({ accessToken: accessToken })
+  } catch (err) {
+    console.error(err)
+    return res.status(err.statusCode || 500).json({ message: err.message })
+  }
+}
+
 module.exports = {
-  signup
+  signup,
+  login
 }
