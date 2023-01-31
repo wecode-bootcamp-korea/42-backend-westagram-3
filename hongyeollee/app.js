@@ -70,7 +70,7 @@ app.post("/post", async (req, res) => {
 });
 
 //과제 4. search and get posts
-app.get("/post", async (req, res) => {
+app.get("/posts", async (req, res) => {
   await mysqlDatabase.query(
     `
     SELECT
@@ -88,8 +88,8 @@ app.get("/post", async (req, res) => {
   );
 });
 
-//과제 5. get post of targeting user
-app.get("/post/user/:userId", async (req, res) => {
+//과제 5. get postㄴ of targeting user
+app.get("/posts/user/:userId", async (req, res) => {
   const { userId } = req.params;
 
   const userOfPost = await mysqlDatabase.query(
