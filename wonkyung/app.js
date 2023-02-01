@@ -27,8 +27,6 @@ appDataSource.initialize()
       console.log("Failed to connect to Database")
    });
   
-
-
 const app =express()
 
 app.use(express.json());
