@@ -1,13 +1,23 @@
 const postDao = require('../models/postDao')
+const jwt = require('jsonwebtoken')
 
-const writePost = async (title, content, imageURL, userId) => {
-  const isWrited = postDao.writePost(
-    title,
-    content,
-    imageURL,
-    userId)
-
-  return isWrited
+const writePost = async (title, content, imageURL, userId, authorization) => {
+  try {
+    const decodedToken = jwt.verify(authorization, process.env.SECRET_KEY)
+    if (decodedToken) {
+      const result = postDao.writePost(
+        title,
+        content,
+        imageURL,
+        userId)
+      return result
+    }
+    return null
+  } catch (err) {
+    err.statusCode = 401
+    err.message = 'Invalid Access Token'
+    throw err
+  }
 }
 
 const getPosts = async () => {

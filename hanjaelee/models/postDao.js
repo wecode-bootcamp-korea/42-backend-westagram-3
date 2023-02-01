@@ -10,8 +10,9 @@ const writePost = async (title, content, imageURL, userId) => {
       user_id
     ) VALUES (?, ?, ?, ?);`
 
-    const post = await database.query(rawQuery, [title, content, imageURL, userId])
-    return post
+    const result = await database.query(
+      rawQuery, [title, content, imageURL, userId])
+    return result
   } catch (err) {
     console.error('Failed to Posting', err)
     throw err

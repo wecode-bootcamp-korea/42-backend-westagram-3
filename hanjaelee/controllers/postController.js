@@ -2,10 +2,20 @@ const postService = require('../services/postService')
 
 const writePost = async (req, res) => {
   try {
+    const { authorization } = req.headers
     const { title, content, imageURL, userId } = req.body
 
-    const data = await postService.writePost(title, content, imageURL, userId)
-    if (!data['affectedRows']) throw new Error('Failed To write Post.')
+    if (!authorization) new Error('No Authorization')
+    if (!title || !content || !!userId) new Error('Invalid Input.')
+
+    const data = await postService.writePost(
+      title,
+      content,
+      imageURL,
+      userId,
+      authorization)
+
+    if (!data || !data['affectedRows']) throw new Error('Failed To write Post.')
 
     return res.status(200).json({ message: 'postCreated' })
   } catch (err) {
