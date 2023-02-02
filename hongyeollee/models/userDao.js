@@ -1,7 +1,7 @@
 const mysqlDatabase = require("./index");
 
 //create user
-const createUser = async (name, password, profileImage, email) => {
+const createUser = async (name, hashedPassword, profileImage, email) => {
   try {
     console.log(mysqlDatabase);
     return await mysqlDatabase.query(
@@ -13,7 +13,7 @@ const createUser = async (name, password, profileImage, email) => {
           email
         )VALUES(?, ?, ?, ?);
         `,
-      [name, password, profileImage, email]
+      [name, hashedPassword, profileImage, email]
     );
   } catch (err) {
     err.message;
