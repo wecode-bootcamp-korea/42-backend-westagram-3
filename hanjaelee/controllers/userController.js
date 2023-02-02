@@ -1,5 +1,5 @@
 const userService = require('../services/userService')
-const utils = require('../utils/error')
+const { catchAsync } = require('../utils/error')
 
 const signup = async (req, res) => {
   try {
@@ -26,7 +26,7 @@ const signup = async (req, res) => {
   }
 }
 
-const login = utils.catchAsync(async (req, res, next) => {
+const login = catchAsync(async (req, res) => {
   try {
     const { email, password } = req.body
     const accessToken = await userService.login(email, password)
