@@ -15,7 +15,7 @@ const createUser = async (name, email, password, profileImage) => {
 
     return isCreated
   } catch (err) {
-    console.error(err)
+    err.message = 'Failed to create user.'
     throw err
   }
 }
@@ -33,7 +33,7 @@ const getUserId = async (email) => {
     if (!data) throw new Error('Email is Invalid.')
     return data.id
   } catch (err) {
-    console.error(err)
+    err.message = 'Failed to get user id.'
     throw err
   }
 }
@@ -51,7 +51,7 @@ const getPassword = async (userId) => {
     if (!data) throw new Error('UserId is Invalid.')
     return data.password
   } catch (err) {
-    console.error(err)
+    err.message = 'Failed to get password.'
     throw err
   }
 }
