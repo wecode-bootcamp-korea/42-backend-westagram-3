@@ -41,7 +41,7 @@ const login = async (email, password) => {
     accessToken = jwt.sign(payLoad, secretKey)
     return accessToken
   } catch (err) {
-    console.error(err)
+    err.meesage = 'Failed to login.'
     throw err
   }
 }

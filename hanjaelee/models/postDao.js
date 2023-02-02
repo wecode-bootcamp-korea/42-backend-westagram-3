@@ -14,7 +14,7 @@ const writePost = async (title, content, imageURL, userId) => {
       rawQuery, [title, content, imageURL, userId])
     return result
   } catch (err) {
-    console.error('Failed to Posting', err)
+    err.message = 'Failed to Posting.'
     throw err
   }
 }
@@ -34,7 +34,7 @@ const getPosts = async () => {
     const posts = await database.query(rawQuery)
     return posts
   } catch (err) {
-    console.error('Failed To Get Posts', err)
+    err.message = 'Failed To Get Posts.'
     throw err
   }
 }
@@ -59,7 +59,7 @@ const getPost = async (userId) => {
       rawQuery, userId)
     return post
   } catch (err) {
-    console.error('Failed get post for user', err)
+    err.message = 'Failed get post for user.'
     throw err
   }
 }
@@ -88,7 +88,7 @@ const modifyPost = async (userId, postId, postContent) => {
       return post
     }
   } catch (err) {
-    console.error('Failed modify post for user', err)
+    err.message = 'Failed modify post for user.'
     throw err
   }
 }
@@ -100,7 +100,7 @@ const deletePost = async (postId) => {
     const isDeleted = await database.query(rawQuery, [postId])
     return isDeleted
   } catch (err) {
-    console.error('Failed to delete post', err)
+    err.message = 'Failed to delete post.'
     throw err
   }
 }

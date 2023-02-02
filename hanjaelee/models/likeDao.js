@@ -11,7 +11,7 @@ const postLike = async (userId, postId) => {
     const isLiked = await database.query(rawQuery, [userId, postId])
     return isLiked
   } catch (err) {
-    console.error('Failed to like post !!!!!\n\n', err)
+    err.message = 'Failed to post like.'
     throw err
   }
 }
