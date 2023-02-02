@@ -1,3 +1,5 @@
+const auth = require('./auth')
+
 const invalidJSONMiddleware = (error, req, res, next) => {
   if (error instanceof SyntaxError) {
     res.status(400).json({ message: 'Invalid JSON is sent' })

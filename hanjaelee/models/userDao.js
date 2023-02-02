@@ -56,8 +56,27 @@ const getPassword = async (userId) => {
   }
 }
 
+const getEmail = async (userId) => {
+  try {
+    const rawQuery = `
+    SELECT
+      email
+    FROM
+      users
+    WHERE id = ?;`
+
+    const [data] = await database.query(rawQuery, [userId])
+    if (!data) throw new Error('UserId is Invalid.')
+    return data.password
+  } catch (err) {
+    err.message = 'Failed to get password.'
+    throw err
+  }
+}
+
 module.exports = {
   createUser,
   getUserId,
-  getPassword
+  getPassword,
+  getEmail
 }

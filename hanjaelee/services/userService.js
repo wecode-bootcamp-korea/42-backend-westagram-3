@@ -39,6 +39,7 @@ const login = async (email, password) => {
 
     const secretKey = process.env.SECRET_KEY
     accessToken = jwt.sign(payLoad, secretKey)
+
     return accessToken
   } catch (err) {
     err.meesage = 'Failed to login.'
