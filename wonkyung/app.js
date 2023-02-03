@@ -84,6 +84,104 @@ app.get("/posts/list", async(req, res,) => {
 });
 
 
+
+const postArr = rows => {
+  for(let i=0; i<rows.length; i++){
+      delete rows[i].userId;
+      delete rows[i].userProfileImage;
+  }
+  return rows;
+}
+
+app.get("/users/posts/:id", async(req, res) => {
+  const { id } = req.params;
+  
+  await appDataSource.query(
+      `SELECT 
+              users.id as userId, 
+              users.profile_image as userProfileImage, 
+              posts.id as postingId, 
+              posts.image_url as postingImageUrl, 
+              posts.content as postingContent 
+          FROM users 
+          INNER JOIN posts 
+          ON users.id = posts.user_id 
+          WHERE users.id = ${id}; 
+      `, 
+      (err, rows) => { 
+          res.status(200).json(
+              { "data" : {
+                      "userId" : rows[0].userId, 
+                      "userProfileImage" : rows[0].userProfileImage,
+                      "postings" : postArr(rows)
+                  }
+              });
+      });
+})
+
+app.patch("/posts/update/:userId/:postId", async(req, res) => {
+  const { userId, postId } = req.params;
+  const { content } = req.body;
+  await appDataSource.query(
+      ` UPDATE 
+              posts 
+          SET 
+          content=? 
+          WHERE user_id=${userId} and id=${postId};
+      `, [content]
+  );
+
+  await appDataSource.query(    
+      `SELECT 
+              users.id as userId, 
+              users.name as userName, 
+              posts.id as postingId, 
+              posts.title as postingTitle, 
+              posts.content as postingContent 
+          FROM users 
+          INNER JOIN posts 
+          ON users.id = posts.user_id
+          WHERE users.id=${userId} and posts.id=${postId};
+      `, (err, rows) => { 
+          res.status(200).json({"data" : rows});
+  });
+})
+  
+app.delete("/posts/delete/:id", async(req, res) => {
+  const { id } = req.params;
+  await appDataSource.query(
+      `DELETE 
+          FROM posts
+          WHERE id=${id}; 
+      `, (err, rows) => {
+          res.status(204).json({ message:"Post Deleted" });
+      }
+  );    
+})
+
+app.post("/likes/:userId/:postId", async(req, res, next)=>{
+  const { userId, postId } = req.params;
+
+  await appDataSource.query(
+      `INSERT INTO likes(
+          user_id, 
+          post_id
+      ) VALUES (${userId}, ${postId});
+      ` );
+  res.status(200).json({ message : "likeCreated" });
+})
+
+app.delete("/likeDelete/:userId/:postId", async(req, res, next)=>{
+  const { userId, postId } = req.params;
+  await appDataSource.query(
+      `DELETE 
+          FROM likes
+          WHERE user_id=${userId} and post_id=${postId};`
+      , (err, rows) => {
+          res.status(200).json({ message : "likesDeleted" });
+      }
+  )
+})
 const PORT =  process.env.PORT;
 
 const start = async () =>{
