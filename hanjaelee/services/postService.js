@@ -15,25 +15,29 @@ const getPosts = async () => {
   return posts
 }
 
-const getPost = async (userId) => {
-  const post = postDao.getPost(userId)
+const getPostsByUserId = async (userId) => {
+  const post = postDao.getPostsByUserId(userId)
   return post
 }
 
 const modifyPost = async (userId, postId, postContent) => {
-  const post = postDao.modifyPost(userId, postId, postContent)
+  const post = postDao.
+    modifyPostByUserIdAndPostId(
+      userId,
+      postId,
+      postContent)
   return post
 }
 
-const deletePost = async (postId) => {
-  const isDeleted = postDao.deletePost(postId)
+const deletePostByPostId = async (postId) => {
+  const isDeleted = postDao.deletePostByPostId(postId)
   return isDeleted
 }
 
 module.exports = {
   writePost,
   getPosts,
-  getPost,
+  getPostsByUserId,
   modifyPost,
-  deletePost
+  deletePostByPostId
 }

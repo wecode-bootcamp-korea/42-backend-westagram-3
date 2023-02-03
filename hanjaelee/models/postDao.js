@@ -1,4 +1,7 @@
 const database = require('./index')
+const { writePostErr,
+  getPostErr,
+  updatePostErr } = require('../utils/error/messages')
 
 const writePost = async (title, content, imageURL, userId) => {
   try {
@@ -13,7 +16,7 @@ const writePost = async (title, content, imageURL, userId) => {
     const post = await database.query(rawQuery, [title, content, imageURL, userId])
     return post
   } catch (err) {
-    err.message = 'Failed to Posting.'
+    err.message = writePostErr.message
     throw err
   }
 }
@@ -33,12 +36,11 @@ const getPosts = async () => {
     const posts = await database.query(rawQuery)
     return posts
   } catch (err) {
-    err.message = 'Failed To Get Posts.'
+    err.message = getPostErr.message
     throw err
   }
 }
-
-const getPost = async (userId) => {
+const getPostsByUserId = async (userId) => {
   try {
     const rawQuery = `
     SELECT
@@ -58,12 +60,12 @@ const getPost = async (userId) => {
       rawQuery, userId)
     return post
   } catch (err) {
-    err.message = 'Failed get post for user.'
+    err.message = getPostErr.message
     throw err
   }
 }
 
-const modifyPost = async (userId, postId, postContent) => {
+const modifyPostByUserIdAndPostId = async (userId, postId, postContent) => {
   try {
     let rawQuery = `
       UPDATE posts
@@ -92,7 +94,7 @@ const modifyPost = async (userId, postId, postContent) => {
   }
 }
 
-const deletePost = async (postId) => {
+const deletePostByPostId = async (postId) => {
   try {
     const rawQuery = `
     DELETE FROM posts WHERE id = ?;`
@@ -107,7 +109,7 @@ const deletePost = async (postId) => {
 module.exports = {
   writePost,
   getPosts,
-  getPost,
-  modifyPost,
-  deletePost
+  getPostsByUserId,
+  modifyPostByUserIdAndPostId,
+  deletePostByPostId
 }
