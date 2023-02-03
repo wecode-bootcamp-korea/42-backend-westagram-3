@@ -7,5 +7,5 @@ const invalidJSONMiddleware = (error, req, res, next) => {
 }
 
 module.exports = {
-  invalidJSONMiddleware
+  invalidJSONMiddleware,
 }

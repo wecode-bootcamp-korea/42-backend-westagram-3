@@ -3,7 +3,8 @@ const userController = require('../controllers/userController')
 
 const router = express.Router()
 
-// 과제 2 : 회원가입
+router.get('/login', userController.login)
+
 router.post('/signup', userController.signup)
 
 module.exports = {

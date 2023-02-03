@@ -6,7 +6,7 @@ const router = express.Router()
 router.get('/', postController.getPosts)
 router.get('/:userId', postController.getPost)
 
-router.post('/write', postController.write)
+router.post('/write', postController.writePost)
 
 router.patch('/:userId/:postId', postController.modifyPost)
 
