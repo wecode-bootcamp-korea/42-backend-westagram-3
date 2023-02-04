@@ -26,21 +26,20 @@ const login = async (email, password) => {
     let accessToken = null;
 
     const hashedPassword = await userDao.getPassword(email);
-    console.log(hashedPassword);
     const comparePassword = await bcrypt.compare(password, hashedPassword);
     if (!comparePassword) {
       const pwErr = new Error("WRONG PASSWORD");
       throw pwErr;
     }
 
-    //const time = currentUTCKoreaTime()
-    const activityTime = currentUTCKoreaTime() + 60 * 60 * 24;
-    console.log(activityTime);
+    const DIVISION_TIME_SECOND_OF_ONEDAY = 60 * 60 * 24;
+    const currentTime = currentUTCKoreaTime();
+    const activityTime = currentUTCKoreaTime() + DIVISION_TIME_SECOND_OF_ONEDAY;
 
     const payload = {
       iss: "hongyeollee",
       sub: "test token",
-      iat: currentUTCKoreaTime(),
+      iat: currentTime,
       nbf: activityTime,
     };
 
@@ -52,8 +51,9 @@ const login = async (email, password) => {
   }
 };
 
+const DIVISION_TIME_SECOND_OF_NINE_HOUR = 1000 + 60 * 60 * 9;
 const currentUTCKoreaTime = () => {
-  const currentTime = new Date().getTime() / 1000 + 60 * 60 * 9;
+  const currentTime = new Date().getTime() / DIVISION_TIME_SECOND_OF_NINE_HOUR;
   return Math.floor(currentTime);
 };
 
