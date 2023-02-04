@@ -1,28 +1,36 @@
-const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+const { loginErr } = require('../utils/error/messages')
+const { makeHashedPassword,
+  checkHashedPassword,
+  getCurrentTimeInSeconds } = require('../utils')
 const userDao = require('../models/userDao.js')
 
 const signup = async (name, email, password, profileImage) => {
-  const COST_FACTOR = 12
-  const hashedPassword = await makeHashedPassword(password, COST_FACTOR)
+  try {
+    const COST_FACTOR = 12
+    const hashedPassword = await makeHashedPassword(password, COST_FACTOR)
 
-  const isCreated = await userDao.createUser(
-    name,
-    email,
-    hashedPassword,
-    profileImage
-  )
+    const isCreated = await userDao.createUser(
+      name,
+      email,
+      hashedPassword,
+      profileImage
+    )
 
-  return isCreated
+    return isCreated
+  } catch (err) {
+    throw err
+  }
 }
 
 const login = async (email, password) => {
   try {
     let accessToken = null
 
-    const userId = await userDao.getUserId(email)
-    const hashedPassword = await userDao.getPassword(userId)
+    const userId = await userDao.getUserIdByEmail(email)
+    const hashedPassword = await userDao.getPasswordByUserId(userId)
+
     if (!userId || !password) return accessToken
 
     const isSame = await checkHashedPassword(password, hashedPassword)
@@ -42,23 +50,11 @@ const login = async (email, password) => {
 
     return accessToken
   } catch (err) {
-    err.meesage = 'Failed to login.'
+    err.message = loginErr.message
     throw err
   }
 }
 
-const makeHashedPassword = async (password, saltRounds) => {
-  return await bcrypt.hash(password, saltRounds)
-}
-
-const checkHashedPassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword)
-}
-
-const getCurrentTimeInSeconds = () => {
-  const current = (Date.now() / 1000) + (60 * 60 * 9)
-  return Math.floor(current)
-}
 module.exports = {
   signup,
   login

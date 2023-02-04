@@ -1,4 +1,9 @@
 const database = require('./index')
+const { duplicateEmailErr,
+  getUserIdErr,
+  getPasswordErr,
+  invalidEmailErr,
+  invalidUserErr } = require('../utils/error/messages')
 
 const createUser = async (name, email, password, profileImage) => {
   try {
@@ -15,12 +20,13 @@ const createUser = async (name, email, password, profileImage) => {
 
     return isCreated
   } catch (err) {
-    err.message = 'Failed to create user.'
+    err.statusCode = duplicateEmailErr.statusCode
+    err.message = duplicateEmailErr.message
     throw err
   }
 }
 
-const getUserId = async (email) => {
+const getUserIdByEmail = async (email) => {
   try {
     const rawQuery = `
     SELECT
@@ -30,15 +36,15 @@ const getUserId = async (email) => {
     WHERE email = ?;`
 
     const [data] = await database.query(rawQuery, [email])
-    if (!data) throw new Error('Email is Invalid.')
+    if (!data) throw new Error(invalidEmailErr)
     return data.id
   } catch (err) {
-    err.message = 'Failed to get user id.'
+    err.message = getUserIdErr.message
     throw err
   }
 }
 
-const getPassword = async (userId) => {
+const getPasswordByUserId = async (userId) => {
   try {
     const rawQuery = `
     SELECT
@@ -48,35 +54,38 @@ const getPassword = async (userId) => {
     WHERE id = ?;`
 
     const [data] = await database.query(rawQuery, [userId])
-    if (!data) throw new Error('UserId is Invalid.')
+    if (!data) throw new Error(invalidUserErr)
     return data.password
   } catch (err) {
-    err.message = 'Failed to get password.'
+    err.message = getPasswordErr.message
     throw err
   }
 }
 
-const getEmail = async (userId) => {
+const getUserByUserId = async (userId) => {
   try {
     const rawQuery = `
     SELECT
-      email
+      id,
+      name,
+      email,
+      password
     FROM
       users
-    WHERE id = ?;`
+    WHERE id = ?`
 
     const [data] = await database.query(rawQuery, [userId])
-    if (!data) throw new Error('UserId is Invalid.')
-    return data.password
+    return data
   } catch (err) {
-    err.message = 'Failed to get password.'
+    err.message = 'getUserByUserId Err'
+    err.statusCode = 400
     throw err
   }
 }
 
 module.exports = {
   createUser,
-  getUserId,
-  getPassword,
-  getEmail
+  getUserIdByEmail,
+  getPasswordByUserId,
+  getUserByUserId
 }

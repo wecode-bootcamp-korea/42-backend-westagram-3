@@ -1,4 +1,5 @@
 const database = require('./index')
+const { postLikeErr } = require('../utils/error/messages')
 
 const postLike = async (userId, postId) => {
   try {
@@ -11,7 +12,7 @@ const postLike = async (userId, postId) => {
     const isLiked = await database.query(rawQuery, [userId, postId])
     return isLiked
   } catch (err) {
-    err.message = 'Failed to post like.'
+    err.message = postLikeErr.message
     throw err
   }
 }

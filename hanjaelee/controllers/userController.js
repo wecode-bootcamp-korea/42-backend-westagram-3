@@ -1,55 +1,48 @@
+const { keyErr,
+  invalidUserErr,
+  createUserErr } = require('../utils/error/messages')
 const userService = require('../services/userService')
 const { catchAsync } = require('../utils/error')
 
-const signup = async (req, res) => {
-  try {
-    const { name, email, password, profileImage } = req.body
-
-    if (!name || !email || !password) {
-      const err = new Error('KEY_ERROR')
-      err.statusCode = 400
-      throw err
-    }
-
-    const isCreated = await userService.signup(
-      name,
-      email,
-      password,
-      profileImage)
-
-    if (!isCreated || !isCreated['affectedRows']) {
-      throw new Error('Failed to Create User')
-    }
-
-    return res.status(200).json({ message: 'userCreated' })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
+const signup = catchAsync(async (req, res) => {
+  const { name, email, password, profileImage } = req.body
+  if (!name || !password || !email) {
+    const err = new Error(keyErr.message)
+    err.statusCode = keyErr.statuscode
+    throw err.statusCode
   }
-}
 
-const login = catchAsync(async (req, res, next) => {
-  try {
-    const { email, password } = req.body
+  const isCreated = await userService.signup(
+    name,
+    email,
+    password,
+    profileImage)
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'KEY_ERROR' })
-    }
-
-    const accessToken = await userService.login(email, password)
-
-    if (!accessToken) {
-      const err = new Error('INVALID_USER_ID')
-      err.statusCode = 400
-      // throw err
-      return res.status(err.statusCode || 500).json({ message: err.message })
-    }
-
-    return res.status(200).json({ accessToken: accessToken })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
+  if (!isCreated || !isCreated['affectedRows']) {
+    const err = new Error(createuserErr.message)
+    err.statusCode = createUserErr.statuscode
+    throw err
   }
+
+  return res.status(200).json({ message: 'userCreated' })
+})
+
+const login = catchAsync(async (req, res) => {
+  const { email, password } = req.body
+  if (!email, !password) {
+    const err = new Error(keyErr.message)
+    err.statusCode = keyErr.statusCode
+    throw err
+  }
+
+  const accessToken = await userService.login(email, password)
+  if (!accessToken) {
+    const err = new Error(invalidUserErr.statusCode)
+    err.statusCode = invalidUserErr.statusCode
+    throw err
+  }
+
+  return res.status(200).json({ accessToken: accessToken })
 })
 
 module.exports = {

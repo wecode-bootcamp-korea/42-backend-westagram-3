@@ -1,83 +1,86 @@
 const postService = require('../services/postService')
+const { catchAsync } = require('../utils/error')
+const { invalidUserErr,
+  createPostErr,
+  deletePostErr,
+  keyErr,
+  accessTokenErr } = require('../utils/error/messages')
 
-const writePost = async (req, res) => {
-  try {
-    const { authorization } = req.headers
-    const { title, content, imageURL, userId } = req.body
-
-    if (!authorization) new Error('No Authorization')
-    if (!title || !content || !!userId) new Error('Invalid Input.')
-
-    const data = await postService.writePost(
-      title,
-      content,
-      imageURL,
-      userId,
-      authorization)
-
-    if (!data || !data['affectedRows']) throw new Error('Failed To write Post.')
-
-    return res.status(200).json({ message: 'postCreated' })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
+const createPost = catchAsync(async (req, res) => {
+  const user = req.user
+  if (!user) {
+    const err = new Error(accessTokenErr.message)
+    err.statusCode = accessTokenErr.statusCode
+    throw err
   }
-}
 
-const getPosts = async (req, res) => {
-  try {
-    const posts = await postService.getPosts()
-    res.status(200).json({ data: posts })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
+  const { title, content, imageURL } = req.body
+  if (!title || !content || !user) {
+    const err = new Error(keyErr.message)
+    err.statusCode = err.statusCode
+    throw err
   }
-}
 
-const getPost = async (req, res) => {
-  try {
-    const { userId } = req.params
-    const post = await postService.getPost(userId)
-    res.status(200).json({ data: post })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
-  }
-}
+  const data = await postService.createPost(title, content, imageURL, user.id)
+  if (!data['affectedRows']) throw new Error(createPostErr.message)
 
-const modifyPost = async (req, res) => {
-  try {
-    const { userId, postId } = req.params
-    const { postContent } = req.body
-    const post = await postService.modifyPost(userId, postId, postContent)
-    if (!post) {
-      throw new Error('this user didn\'t write this post.')
-    }
-    res.status(200).json({ data: post })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
-  }
-}
+  return res.status(200).json({ message: 'postCreated' })
+})
 
-const deletePost = async (req, res) => {
-  try {
-    const { postId } = req.params
-    const isDeleted = await postService.deletePost(postId)
-    if (!isDeleted['affectedRows']) {
-      throw new Error('Failed to Delete Post.')
-    }
-    res.status(200).json({ message: 'postDeleted' })
-  } catch (err) {
-    console.error(err)
-    return res.status(err.statusCode || 500).json({ message: err.message })
+const getPosts = catchAsync(async (req, res) => {
+  const posts = await postService.getPosts()
+  return res.status(200).json({ data: posts })
+})
+
+const getPostsByUserId = catchAsync(async (req, res) => {
+  const { userId } = req.params
+  if (!userId) {
+    const err = new Error(keyErr.message)
+    err.statusCode = keyErr.statusCode
+    throw err
   }
-}
+
+  const post = await postService.getPostsByUserId(userId)
+
+  return res.status(200).json({ data: post })
+})
+
+const modifyPost = catchAsync(async (req, res) => {
+  const { postId } = req.params
+  const userId = req.userId
+  if (!postId) {
+    const err = new Error(keyErr.message)
+    err.statusCode = keyErr.statusCode
+    throw err
+  }
+
+  const { postContent } = req.body
+  if (!postContent) {
+    const err = new Error(keyErr.message)
+    err.statusCode = keyErr.statusCode
+    throw err
+  }
+
+  const post = await postService.modifyPost(userId, postId, postContent)
+  if (!post) {
+    throw new Error(invalidUserErr.message)
+  }
+  return res.status(200).json({ data: post })
+})
+
+const deletePostByPostId = catchAsync(async (req, res) => {
+  const { postId } = req.params
+  const isDeleted = await postService.deletePostByPostId(postId)
+  if (!isDeleted['affectedRows']) {
+    throw new Error(deletePostErr.message)
+  }
+  return res.status(200).json({ message: 'postDeleted' })
+})
 
 module.exports = {
-  writePost,
+  createPost,
   getPosts,
-  getPost,
+  getPostsByUserId,
   modifyPost,
-  deletePost
+  deletePostByPostId
 }
