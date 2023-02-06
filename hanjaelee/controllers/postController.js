@@ -1,10 +1,10 @@
 const postService = require('../services/postService')
 const { catchAsync } = require('../utils/error')
-const { invalidUserErr,
-  createPostErr,
+const { accessTokenErr } = require('../utils/error/messages')
+const { invalidUserErr } = require('../utils/error/userErrMsg')
+const { createPostErr,
   deletePostErr,
-  keyErr,
-  accessTokenErr } = require('../utils/error/messages')
+  keyErr } = require('../utils/error/postErrMsg')
 
 const createPost = catchAsync(async (req, res) => {
   const user = req.user

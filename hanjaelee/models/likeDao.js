@@ -1,5 +1,5 @@
 const database = require('./index')
-const { postLikeErr } = require('../utils/error/messages')
+const { postLikeErr } = require('../utils/error/likeErrMsg')
 
 const postLike = async (userId, postId) => {
   try {

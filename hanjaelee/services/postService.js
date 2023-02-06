@@ -1,5 +1,5 @@
 const postDao = require('../models/postDao')
-const { invalidUserErr, invalidAccessTokenErr } = require('../utils/error/messages')
+const { invalidAccessTokenErr } = require('../utils/error/messages')
 
 const createPost = async (title, content, imageURL, userId) => {
   try {

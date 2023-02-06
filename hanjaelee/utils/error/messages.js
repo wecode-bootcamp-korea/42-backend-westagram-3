@@ -11,19 +11,9 @@ const messages = {
     message: "NO_PASSWORD_ERROR"
   },
 
-  invalidUserErr: {
-    statusCode: 400,
-    message: "INVALID_USER_ERROR"
-  },
-
-  invalidEmailErr: {
-    statusCode: 400,
-    message: "INVALID_EMAIL_ERROR"
-  },
-
-  duplicateEmailErr: {
-    statusCode: 400,
-    message: "DUPLICATE_EMAIL_ERROR"
+  invalidAccessTokenErr: {
+    statusCode: 401,
+    message: "INVALID_ACCESS_TOKEN"
   },
 
   accessTokenErr: {
@@ -36,44 +26,9 @@ const messages = {
     message: "FAILED_TO_LOGIN"
   },
 
-  createPostErr: {
-    statusCode: 400,
-    message: "FAILED_TO_WRITE_POST"
-  },
-
-  getPostErr: {
-    statusCode: 400,
-    message: "FAILED_TO_GET_POST"
-  },
-
-  deletePostErr: {
-    statusCode: 400,
-    message: "FAILED_TO_DELETE"
-  },
-
-  updatePostErr: {
-    statusCode: 400,
-    message: "FAILED_TO_UPDATE_ERROR"
-  },
-
   createUserErr: {
     statusCode: 400,
     message: "FAILED_TO_CREATE_USER"
-  },
-
-  getUserIdErr: {
-    statusCode: 400,
-    message: "FAILED_TO_GET_USER_ID"
-  },
-
-  getPasswordErr: {
-    statusCode: 400,
-    message: "FAILED_TO_GET_PASSWORD"
-  },
-
-  postLikeErr: {
-    statusCode: 400,
-    message: "FAILED_TO_POST_LIKE"
   },
 
   accessTokenErr: {

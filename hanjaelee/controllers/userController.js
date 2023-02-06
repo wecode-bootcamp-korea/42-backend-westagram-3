@@ -1,6 +1,5 @@
-const { keyErr,
-  invalidUserErr,
-  createUserErr } = require('../utils/error/messages')
+const { keyErr } = require('../utils/error/messages')
+const { invalidUserErr, createUserErr } = require('../utils/error/userErrMsg')
 const userService = require('../services/userService')
 const { catchAsync } = require('../utils/error')
 

@@ -1,5 +1,5 @@
 const { catchAsync } = require('../utils/error')
-const { postLikeErr } = require('../utils/error/messages')
+const { postLikeErr } = require('../utils/error/likeErrMsg')
 const likeService = require('../services/likeService')
 
 const postLike = catchAsync(async (req, res) => {

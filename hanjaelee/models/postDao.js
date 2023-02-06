@@ -1,6 +1,6 @@
 const database = require('./index')
 const { createPostErr,
-  getPostErr } = require('../utils/error/messages')
+  getPostErr } = require('../utils/error/postErrMsg')
 
 const createPost = async (title, content, imageURL, userId) => {
   try {

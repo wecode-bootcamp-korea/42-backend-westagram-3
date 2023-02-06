@@ -1,9 +1,11 @@
 const database = require('./index')
-const { duplicateEmailErr,
-  getUserIdErr,
-  getPasswordErr,
+const {
   invalidEmailErr,
-  invalidUserErr } = require('../utils/error/messages')
+  invalidUserErr,
+  duplicateEmailErr,
+  getUserIdErr,
+  getPasswordErr
+} = require('../utils/error/userErrMsg')
 
 const createUser = async (name, email, password, profileImage) => {
   try {
