@@ -1,9 +1,7 @@
 const mysqlDatabase = require("./index");
 
-//create user
 const createUser = async (name, hashedPassword, profileImage, email) => {
   try {
-    console.log(mysqlDatabase);
     return await mysqlDatabase.query(
       `
       INSERT INTO users(
@@ -22,6 +20,30 @@ const createUser = async (name, hashedPassword, profileImage, email) => {
   }
 };
 
+const getPassword = async (email) => {
+  try {
+    const [result] = await mysqlDatabase.query(
+      `
+      SELECT 
+        password 
+      FROM 
+        users 
+      WHERE email = ?`,
+      [email]
+    );
+
+    if (!result) {
+      const err = new Error("No Password for user email.");
+      err.statusCode = 400;
+      throw err;
+    }
+    return result.password;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createUser,
+  getPassword,
 };

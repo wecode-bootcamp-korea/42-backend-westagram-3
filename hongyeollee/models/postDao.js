@@ -1,6 +1,5 @@
 const mysqlDatabase = require("../models");
 
-//create posts
 const createPosts = async (title, content, imageUrl, userId) => {
   try {
     return await mysqlDatabase.query(
@@ -21,7 +20,6 @@ const createPosts = async (title, content, imageUrl, userId) => {
   }
 };
 
-//get posts
 const getPosts = async () => {
   try {
     return await mysqlDatabase.query(
@@ -43,7 +41,6 @@ const getPosts = async () => {
   }
 };
 
-//get posts of targeting user
 const postsOfUser = async (userId) => {
   try {
     return await mysqlDatabase.query(
@@ -71,7 +68,6 @@ const postsOfUser = async (userId) => {
   }
 };
 
-//modify posts
 const modifyPosts = async (postContent, postId) => {
   try {
     await mysqlDatabase.query(
@@ -102,7 +98,6 @@ const modifyPosts = async (postContent, postId) => {
   }
 };
 
-//delete posts
 const deletePosts = async (postId) => {
   try {
     await mysqlDatabase.query(

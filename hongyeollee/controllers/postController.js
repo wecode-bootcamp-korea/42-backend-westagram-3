@@ -1,6 +1,5 @@
 const postService = require("../services/postService");
 
-//create posts
 const createPosts = async (req, res) => {
   try {
     const { title, content, imageUrl, userId } = req.body;
@@ -16,7 +15,6 @@ const createPosts = async (req, res) => {
   }
 };
 
-//get posts
 const getPosts = async (req, res) => {
   try {
     const posts = await postService.getPosts();
@@ -27,7 +25,6 @@ const getPosts = async (req, res) => {
   }
 };
 
-//get posts of user
 const postsOfUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -43,7 +40,6 @@ const postsOfUser = async (req, res) => {
   }
 };
 
-//modify posts
 const modifyPosts = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -59,7 +55,6 @@ const modifyPosts = async (req, res) => {
   }
 };
 
-//delete posts
 const deletePosts = async (req, res) => {
   try {
     const { postId } = req.params;
