@@ -1,10 +1,9 @@
 const userDao = require("../models/userDao");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const constants = require("../utills/constants");
 
-//create user
 const signup = async (name, password, profileImage, email) => {
-  // encryption of password
   const costFactor = 12;
   const makeHash = async (password, costFactor) => {
     return await bcrypt.hash(password, costFactor);
@@ -20,7 +19,6 @@ const signup = async (name, password, profileImage, email) => {
   return createUser;
 };
 
-// compare encryption of password and service Token
 const login = async (email, password) => {
   try {
     let accessToken = null;
@@ -32,9 +30,8 @@ const login = async (email, password) => {
       throw pwErr;
     }
 
-    const DIVISION_TIME_SECOND_OF_ONEDAY = 60 * 60 * 24;
     const currentTime = currentUTCKoreaTime();
-    const activityTime = currentUTCKoreaTime() + DIVISION_TIME_SECOND_OF_ONEDAY;
+    const activityTime = currentTime + onedayHour;
 
     const payload = {
       iss: "hongyeollee",
@@ -51,9 +48,10 @@ const login = async (email, password) => {
   }
 };
 
-const DIVISION_TIME_SECOND_OF_NINE_HOUR = 1000 + 60 * 60 * 9;
+const nineHour = constants.DIVISION_TIME_SECOND_OF_NINE_HOUR;
+const onedayHour = constants.DIVISION_TIME_SECOND_OF_ONEDAY;
 const currentUTCKoreaTime = () => {
-  const currentTime = new Date().getTime() / DIVISION_TIME_SECOND_OF_NINE_HOUR;
+  const currentTime = new Date().getTime() / nineHour;
   return Math.floor(currentTime);
 };
 

@@ -1,9 +1,7 @@
 const userService = require("../services/userService");
 
-//create user
 const signup = async (req, res) => {
   try {
-    console.log("signup");
     const { name, password, profileImage, email } = req.body;
 
     if (!name || !password || !email) {
@@ -18,7 +16,6 @@ const signup = async (req, res) => {
   }
 };
 
-//login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -30,7 +27,6 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "NOT_EXIST_TOKEN" });
     }
 
-    // exists
     return res.status(200).json({ accessToken: accessToken });
   } catch (err) {
     console.error(err);

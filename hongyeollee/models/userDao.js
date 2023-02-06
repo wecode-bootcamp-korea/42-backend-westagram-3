@@ -1,6 +1,5 @@
 const mysqlDatabase = require("./index");
 
-//create user
 const createUser = async (name, hashedPassword, profileImage, email) => {
   try {
     return await mysqlDatabase.query(

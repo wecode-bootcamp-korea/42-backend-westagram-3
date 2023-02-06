@@ -1,6 +1,5 @@
 const mysqlDatabase = require("../models");
 
-//create like
 const createLike = async (userId, postId) => {
   try {
     return await mysqlDatabase.query(
