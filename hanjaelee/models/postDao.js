@@ -1,6 +1,8 @@
 const database = require('./index')
+const { createPostErr,
+  getPostErr } = require('../utils/error/postErrMsg')
 
-const writePost = async (title, content, imageURL, userId) => {
+const createPost = async (title, content, imageURL, userId) => {
   try {
     const rawQuery = `
     INSERT INTO posts (
@@ -10,10 +12,11 @@ const writePost = async (title, content, imageURL, userId) => {
       user_id
     ) VALUES (?, ?, ?, ?);`
 
-    const post = await database.query(rawQuery, [title, content, imageURL, userId])
-    return post
+    const result = await database.query(
+      rawQuery, [title, content, imageURL, userId])
+    return result
   } catch (err) {
-    err.message = 'Failed to Posting.'
+    err.message = createPostErr.message
     throw err
   }
 }
@@ -33,12 +36,11 @@ const getPosts = async () => {
     const posts = await database.query(rawQuery)
     return posts
   } catch (err) {
-    err.message = 'Failed To Get Posts.'
+    err.message = getPostErr.message
     throw err
   }
 }
-
-const getPost = async (userId) => {
+const getPostsByUserId = async (userId) => {
   try {
     const rawQuery = `
     SELECT
@@ -58,12 +60,12 @@ const getPost = async (userId) => {
       rawQuery, userId)
     return post
   } catch (err) {
-    err.message = 'Failed get post for user.'
+    err.message = getPostErr.message
     throw err
   }
 }
 
-const modifyPost = async (userId, postId, postContent) => {
+const modifyPostByUserIdAndPostId = async (postId, userId, postContent) => {
   try {
     let rawQuery = `
       UPDATE posts
@@ -81,18 +83,19 @@ const modifyPost = async (userId, postId, postContent) => {
         p.content AS postingContent FROM posts AS p
       INNER JOIN users AS u
       ON p.user_id = u.id
-      WHERE u.id = ? AND p.id = ?
+      WHERE p.id = ? AND u.id = ?
       LIMIT 1;`
-      const [post] = await database.query(rawQuery, [userId, postId])
+      const [post] = await database.query(rawQuery, [postId, userId])
       return post
     }
   } catch (err) {
     err.message = 'Failed modify post for user.'
+    err.statusCode = 400
     throw err
   }
 }
 
-const deletePost = async (postId) => {
+const deletePostByPostId = async (postId) => {
   try {
     const rawQuery = `
     DELETE FROM posts WHERE id = ?;`
@@ -105,9 +108,9 @@ const deletePost = async (postId) => {
 }
 
 module.exports = {
-  writePost,
+  createPost,
   getPosts,
-  getPost,
-  modifyPost,
-  deletePost
+  getPostsByUserId,
+  modifyPostByUserIdAndPostId,
+  deletePostByPostId
 }

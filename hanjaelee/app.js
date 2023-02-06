@@ -3,17 +3,17 @@ const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
 const routes = require('./routes')
-const middlewares = require('./middlewares')
+const { invalidJSONMiddleware } = require('./middlewares')
 const { globalErrorHandler } = require('./utils/error')
 
 app = express()
 
-app.use(express.json())
-app.use(globalErrorHandler)
-app.use(middlewares.invalidJSONMiddleware)
 app.use(cors())
 app.use(morgan('dev'))
+app.use(express.json())
+app.use(invalidJSONMiddleware)
 app.use(routes)
+app.use(globalErrorHandler)
 
 app.get('/ping', (req, res) => {
   res.json({ message: 'pong' })
